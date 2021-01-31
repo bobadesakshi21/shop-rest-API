@@ -1,7 +1,9 @@
+/* eslint-disable no-unused-vars */
+const path = require('path')
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
-const path = require('path')
 
 const feedRoutes = require('./routes/feed')
 
