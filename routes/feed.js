@@ -7,6 +7,6 @@ const feedController = require('../controllers/feed')
 router.get('/posts', feedController.getPosts)
 
 //POST /fees/posts
-router.post('/posts', feedController.createPost)
+router.post('/post', feedController.createPost)
 
 module.exports = router
