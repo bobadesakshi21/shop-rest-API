@@ -21,10 +21,8 @@ app.use('/feed', feedRoutes)
 
 mongoose.connect(MONGODB_URI)
   .then(() => {
-    app.listen(3000)
+    app.listen(8080)
   })
   .catch(err => {
     console.log('CONNECTION ERR', err)
   })
-
-app.listen(8080)
