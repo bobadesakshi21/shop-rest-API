@@ -189,15 +189,21 @@ exports.deletePost = (req, res, next) => {
         throw error
       }
       clearImage(post.imageUrl)
-
       return Post.findByIdAndRemove(postId)
     })
     .then(result => {
-      console.log('DELETE RESULT: ', result)
+      return User.findById(req.userId)
+    })
+    .then(user => {
+      user.posts.pull(postId)
+      return user.save()
+    })
+    .then(() => {
       res.status(200).json({
         message: 'Post deleted successfully!'
       })
     })
+
     .catch(err => {
       if (!err.statusCode) {
         err.statusCode = 500
