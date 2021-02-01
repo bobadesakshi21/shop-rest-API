@@ -49,9 +49,9 @@ exports.login = (req, res, next) => {
 
   let loadedUser
 
-  User.findOne({email: email})
+  User.findOne({ email: email })
     .then(user => {
-      if(!user) {
+      if (!user) {
         const err = new Error('User Not Found')
         err.statusCode = 401
         throw err
@@ -60,21 +60,66 @@ exports.login = (req, res, next) => {
       return bcrypt.compare(password, user.password)
     })
     .then(isEqual => {
-      if(!isEqual) {
+      if (!isEqual) {
         const error = new Error('Wrong Password')
         error.statusCode = 401
         throw error
       }
       const token = jwt.sign({
-        email: loadedUser.email, 
+        email: loadedUser.email,
         userId: loadedUser._id.toString(),
-      }, 
+      },
       'secret',
-      { expiresIn: '1h'}
+      { expiresIn: '1h' }
       )
       return res.status(200).json({
         token: token,
         userId: loadedUser._id.toString()
+      })
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500
+      }
+      next(err)
+    })
+}
+
+exports.getUserStatus = (req, res, next) => {
+  User.findById(req.userId)
+    .then(user => {
+      if (!user) {
+        const error = new Error('User Not Found')
+        error.statusCode = 404
+        throw error
+      }
+      return res.status(200).json({
+        status: user.status
+      })
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500
+      }
+      next(err)
+    })
+}
+
+exports.updateUserStatus = (req, res, next) => {
+  const newStatus = req.body.status
+  User.findById(req.userId)
+    .then(user => {
+      if (!user) {
+        const err = new Error('User Not Found')
+        err.statusCode = 401
+        throw err
+      }
+      user.status = newStatus
+      return user.save()
+    })
+    .then(result => {
+      return res.status(200).json({
+        message: 'User Updated'
       })
     })
     .catch(err => {
