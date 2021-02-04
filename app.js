@@ -65,7 +65,16 @@ app.use((error, req, res, next) => {
 
 mongoose.connect(MONGODB_URI)
   .then(() => {
-    app.listen(8080)
+    const server = app.listen(8080)
+    const io = require('socket.io')(server, {
+      cors: {
+        origin: 'http://localhost:3000',
+        methods: ['GET', 'POST', 'PATCH', 'DELETE']
+      }
+    })
+    io.on('connection', socket => {
+      console.log('Connection Established')
+    })
   })
   .catch(err => {
     console.log('CONNECTION ERR', err)
